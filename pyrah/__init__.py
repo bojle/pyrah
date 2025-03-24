@@ -43,6 +43,19 @@ def rah_write(appid, d_buf):
     __write_buffer(appid, buf_loc, len(d_buf))
     __remove_buffer(buf_loc)
 
+def rah_write_alt(appid, d_buf):
+    if type(d_buf) != bytes:
+        raise Exception("Data buffer should be type of bytes")
+
+    buffer = __get_buffer(appid, len(d_buf))
+    buf_loc = ctypes.c_char_p(buffer)
+
+    data = np.array(d_buf).ctypes.data_as(ctypes.c_char_p)
+    __c.memcpy(buf_loc, data, len(d_buf))
+
+    __write_buffer(appid, buf_loc, len(d_buf))
+    __remove_buffer(buf_loc)
+
 def rah_read(appid, d_len):
     ptr = ctypes.create_string_buffer(d_len)
     __rah.rah_read.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_ulong]
